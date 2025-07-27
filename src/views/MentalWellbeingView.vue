@@ -1,0 +1,10 @@
+<template>
+  <div class="py-5 text-center">
+    <h1>Mental Wellbeing</h1>
+    <p>Mental wellbeing content will be displayed here.</p>
+  </div>
+</template>
+
+<script setup>
+// No logic yet
+</script>
