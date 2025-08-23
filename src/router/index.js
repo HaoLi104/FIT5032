@@ -10,6 +10,42 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: '/tools/email',
+      name: 'email-send',
+      component: () => import('../views/EmailSendView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/tools/tables',
+      name: 'data-tables',
+      component: () => import('../views/DataTablesView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/tools/map',
+      name: 'map',
+      component: () => import('../views/MapView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/tools/booking',
+      name: 'booking',
+      component: () => import('../views/BookingView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/tools/bulk-email',
+      name: 'bulk-email',
+      component: () => import('../views/BulkEmailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/tools/charts',
+      name: 'charts',
+      component: () => import('../views/ChartsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/health',
       name: 'health',
       component: () => import('../views/HealthWellnessView.vue'),

@@ -29,6 +29,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
+import { firebaseAuth } from '../firebase/config'
 
 const email = ref('')
 const password = ref('')
@@ -36,16 +37,18 @@ const error = ref('')
 const router = useRouter()
 const authStore = useAuthStore()
 
-function onLogin() {
+async function onLogin() {
   error.value = ''
-  const users = JSON.parse(localStorage.getItem('users') || '[]')
-  const user = users.find((u) => u.email === email.value && u.password === password.value)
-  if (!user) {
-    error.value = 'Invalid email or password'
+  if (!email.value || !password.value) {
+    error.value = 'Email and password are required'
     return
   }
-  authStore.login(user)
-  localStorage.setItem('currentUser', JSON.stringify(user))
-  router.push('/')
+  const { success, error: err } = await firebaseAuth.signIn(email.value, password.value)
+  if (!success) {
+    error.value = err || 'Login failed'
+    return
+  }
+  const redirect = router.currentRoute.value.query.redirect || '/'
+  router.push(redirect)
 }
 </script>

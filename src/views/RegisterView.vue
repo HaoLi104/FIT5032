@@ -47,6 +47,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { firebaseAuth } from '../firebase/config'
+import { useAuthStore } from '../store/auth'
 
 const email = ref('')
 const password = ref('')
@@ -54,12 +56,13 @@ const confirmPassword = ref('')
 const role = ref('')
 const error = ref('')
 const router = useRouter()
+const authStore = useAuthStore()
 
 function validateEmail(email) {
   return /^\S+@\S+\.\S+$/.test(email)
 }
 
-function onRegister() {
+async function onRegister() {
   error.value = ''
   if (!email.value || !password.value || !confirmPassword.value || !role.value) {
     error.value = 'All fields are required'
@@ -77,19 +80,13 @@ function onRegister() {
     error.value = 'Passwords do not match'
     return
   }
-  const users = JSON.parse(localStorage.getItem('users') || '[]')
-  if (users.some((u) => u.email === email.value)) {
-    error.value = 'Email already registered'
+  const { success, error: err, user } = await firebaseAuth.signUp(email.value, password.value)
+  if (!success) {
+    error.value = err || 'Register failed'
     return
   }
-  const newUser = {
-    id: Date.now(),
-    email: email.value,
-    password: password.value,
-    role: role.value,
-  }
-  users.push(newUser)
-  localStorage.setItem('users', JSON.stringify(users))
-  router.push('/login')
+  authStore.setUserFromFirebase(user)
+  authStore.setRoleForCurrentUser(role.value)
+  router.push('/')
 }
 </script>

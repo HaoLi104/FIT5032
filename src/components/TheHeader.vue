@@ -40,6 +40,36 @@
               >For Caregivers</router-link
             >
           </li>
+          <li class="nav-item" v-if="isAuthenticated">
+            <router-link class="nav-link" active-class="active" to="/tools/email"
+              >Email</router-link
+            >
+          </li>
+          <li class="nav-item" v-if="isAuthenticated">
+            <router-link class="nav-link" active-class="active" to="/tools/tables"
+              >Tables</router-link
+            >
+          </li>
+          <li class="nav-item" v-if="isAuthenticated">
+            <router-link class="nav-link" active-class="active" to="/tools/map"
+              >Map</router-link
+            >
+          </li>
+          <li class="nav-item" v-if="isAuthenticated">
+            <router-link class="nav-link" active-class="active" to="/tools/booking"
+              >Booking</router-link
+            >
+          </li>
+          <li class="nav-item" v-if="isAuthenticated">
+            <router-link class="nav-link" active-class="active" to="/tools/bulk-email"
+              >Bulk Email</router-link
+            >
+          </li>
+          <li class="nav-item" v-if="isAuthenticated">
+            <router-link class="nav-link" active-class="active" to="/tools/charts"
+              >Charts</router-link
+            >
+          </li>
         </ul>
         <form class="d-flex me-3" role="search">
           <input
@@ -77,6 +107,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
+import { firebaseAuth } from '../firebase/config'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -85,8 +116,10 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const user = computed(() => authStore.user)
 
 function logout() {
-  authStore.logout()
-  router.push('/')
+  firebaseAuth.signOut().finally(() => {
+    authStore.logout()
+    router.push('/')
+  })
 }
 </script>
 

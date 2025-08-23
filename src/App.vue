@@ -3,20 +3,20 @@ import TheHeader from './components/TheHeader.vue'
 import TheFooter from './components/TheFooter.vue'
 import { onMounted } from 'vue'
 import { useAuthStore } from './store/auth'
+import { firebaseAuth } from './firebase/config'
 
 const authStore = useAuthStore()
 onMounted(() => {
-  const currentUser = localStorage.getItem('currentUser')
-  if (currentUser) {
-    authStore.login(JSON.parse(currentUser))
-  }
+  firebaseAuth.onAuthStateChanged((fbUser) => {
+    authStore.setUserFromFirebase(fbUser)
+  })
 })
 </script>
 
 <template>
   <div id="app">
     <TheHeader />
-    <main class="container flex-grow-1">
+    <main id="main" class="container flex-grow-1" tabindex="-1">
       <router-view />
     </main>
     <TheFooter />
