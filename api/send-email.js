@@ -57,7 +57,8 @@ export default async function handler(req, res) {
         .status(400)
         .json({ success: false, error: 'Form parse failed: ' + (e.message || String(e)) })
     }
-    const to = fields.to || process.env.MAIL_TO_DEFAULT
+    const rawTo = fields.to
+    const to = (Array.isArray(rawTo) ? rawTo[0] : rawTo) || process.env.MAIL_TO_DEFAULT || process.env.SMTP_USER
     const subject = fields.subject || 'No subject'
     const message = fields.message || ''
 
@@ -97,6 +98,7 @@ export default async function handler(req, res) {
     setCors()
     return res.status(200).json({ success: true, id: info.messageId })
   } catch (e) {
+    console.error('send-email error:', e)
     setCors()
     return res.status(500).json({ success: false, error: e.message || String(e) })
   }
