@@ -21,21 +21,49 @@ function parseForm(req) {
 }
 
 export default async function handler(req, res) {
-  const cors = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+  const setCors = () => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   }
-  if (req.method === 'OPTIONS') return res.status(200).set(cors).end()
-  if (req.method !== 'POST') return res.status(405).set(cors).json({ success: false, error: 'Method not allowed' })
+  if (req.method === 'OPTIONS') {
+    setCors()
+    return res.status(200).end()
+  }
+  if (req.method === 'GET') {
+    // health check to verify env availability
+    setCors()
+    return res.status(200).json({
+      success: true,
+      health: 'ok',
+      hasUser: Boolean(process.env.SMTP_USER),
+      hasPass: Boolean(process.env.SMTP_PASS),
+      from: process.env.MAIL_FROM || process.env.SMTP_USER || null,
+    })
+  }
+  if (req.method !== 'POST') {
+    setCors()
+    return res.status(405).json({ success: false, error: 'Method not allowed' })
+  }
   try {
-    const { fields, files } = await parseForm(req)
+    let fields, files
+    try {
+      const parsed = await parseForm(req)
+      fields = parsed.fields
+      files = parsed.files
+    } catch (e) {
+      setCors()
+      return res
+        .status(400)
+        .json({ success: false, error: 'Form parse failed: ' + (e.message || String(e)) })
+    }
     const to = fields.to || process.env.MAIL_TO_DEFAULT
     const subject = fields.subject || 'No subject'
     const message = fields.message || ''
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      return res.status(500).set(cors).json({ success: false, error: 'SMTP is not configured' })
+      setCors()
+      return res.status(500).json({ success: false, error: 'SMTP is not configured' })
     }
 
     const transporter = nodemailer.createTransport({
@@ -66,9 +94,11 @@ export default async function handler(req, res) {
     }
 
     const info = await transporter.sendMail(mailOptions)
-    return res.status(200).set(cors).json({ success: true, id: info.messageId })
+    setCors()
+    return res.status(200).json({ success: true, id: info.messageId })
   } catch (e) {
-    return res.status(500).set(cors).json({ success: false, error: e.message || String(e) })
+    setCors()
+    return res.status(500).json({ success: false, error: e.message || String(e) })
   }
 }
 
