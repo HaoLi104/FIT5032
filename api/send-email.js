@@ -57,10 +57,11 @@ export default async function handler(req, res) {
         .status(400)
         .json({ success: false, error: 'Form parse failed: ' + (e.message || String(e)) })
     }
+    const first = (v, d = '') => (Array.isArray(v) ? v[0] : v ?? d)
     const rawTo = fields.to
-    const to = (Array.isArray(rawTo) ? rawTo[0] : rawTo) || process.env.MAIL_TO_DEFAULT || process.env.SMTP_USER
-    const subject = fields.subject || 'No subject'
-    const message = fields.message || ''
+    const to = first(rawTo) || process.env.MAIL_TO_DEFAULT || process.env.SMTP_USER
+    const subject = first(fields.subject, 'No subject')
+    const message = first(fields.message, '')
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
       setCors()
@@ -85,11 +86,12 @@ export default async function handler(req, res) {
     }
 
     // Attachment (optional)
-    if (files.attachment && files.attachment.filepath) {
+    const att = files.attachment && (Array.isArray(files.attachment) ? files.attachment[0] : files.attachment)
+    if (att && att.filepath) {
       mailOptions.attachments = [
         {
-          filename: files.attachment.originalFilename || 'attachment',
-          path: files.attachment.filepath,
+          filename: att.originalFilename || 'attachment',
+          path: att.filepath,
         },
       ]
     }
