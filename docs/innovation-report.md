@@ -19,7 +19,7 @@ We also outline recommendations for future improvements.
   - Delete event via eventClick
 - UX rationale: Users avoid overlapping bookings; instant feedback and calendar visualization reduce friction.
 
-## 2. Bulk Email (Cloudflare Pages Functions + Resend)
+## 2. Bulk Email (Serverless + Resend)
 - Endpoint: `POST /api/bulk-email`
 - Files: `functions/api/bulk-email.js`, UI in `src/views/BulkEmailView.vue`
 - Capabilities:
@@ -61,5 +61,5 @@ We also outline recommendations for future improvements.
 - Public API: pagination, ETags, API keys & rate limiting.
 - Charts: add cohort analysis (users by role), retention; export images/CSV.
 - Offline-first: add service worker, queue writes; local cache for bookings.
-- GenAI: integrate Gemini for article summarization and event recommendations.
+- Future idea: integrate a summarization service for articles and recommendations.
 

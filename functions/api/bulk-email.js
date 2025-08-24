@@ -1,4 +1,4 @@
-// Cloudflare Pages Function: /api/bulk-email
+// Serverless function: /api/bulk-email
 // Accepts multipart/form-data: to_list (comma/newline separated), subject, message, attachment(optional)
 
 function arrayBufferToBase64(buffer) {

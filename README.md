@@ -2,7 +2,7 @@
 
 A Vue 3 + Vite application for seniors and caregivers, featuring:
 - Firebase Authentication (email/password)
-- Email sending with attachments via Cloudflare Pages Functions (Resend API)
+- Email sending with attachments via serverless functions (Resend and SMTP)
 - Interactive tables (search, sort, pagination) and CSV/PDF export
 - Map with place search and routing (Leaflet + Nominatim + OSRM)
 - Accessibility (WCAG 2.1 AA): skip link, high-contrast, large font, keyboard focus

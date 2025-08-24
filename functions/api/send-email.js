@@ -1,5 +1,5 @@
-// Cloudflare Pages Function: /api/send-email
-// Expects multipart/form-data with fields: to, subject, message, attachment (File)
+// Serverless function: /api/send-email
+// Accepts multipart/form-data fields: to, subject, message, attachment
 
 function arrayBufferToBase64(buffer) {
   let binary = ''

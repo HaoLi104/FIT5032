@@ -72,7 +72,11 @@ async function onSubmit() {
     form.append('message', message.value)
     if (fileInput.value?.files?.[0]) form.append('attachment', fileInput.value.files[0])
     const base = import.meta.env.VITE_VERCEL_API_BASE || ''
-    const endpoint = base ? `${base}/api/bulk-email` : '/api/bulk-email'
+    const endpoint = base
+      ? `${base}/api/bulk-email`
+      : (window.location.origin.includes('localhost')
+          ? 'https://fit-5032.vercel.app/api/bulk-email'
+          : '/api/bulk-email')
     const res = await fetch(endpoint, { method: 'POST', body: form })
     const text = await res.text()
     let data

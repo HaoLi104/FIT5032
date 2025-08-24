@@ -57,14 +57,21 @@ async function onSubmit() {
     }
     // 优先调用 Vercel(若配置了 Vercel URL)，否则调用本地/Cloudflare
     const vercelUrl = import.meta.env.VITE_VERCEL_API_BASE || ''
-    const endpoint = vercelUrl ? `${vercelUrl}/api/send-email` : '/api/send-email'
+    const endpoint = vercelUrl
+      ? `${vercelUrl}/api/send-email`
+      : (window.location.origin.includes('localhost')
+          ? 'https://fit-5032.vercel.app/api/send-email'
+          : '/api/send-email')
     const res = await fetch(endpoint, {
       method: 'POST',
       body: formData,
     })
-    const data = await res.json()
-    if (!data?.success) {
-      throw new Error(data?.error || 'Failed to send email')
+    const text = await res.text()
+    let data
+    try { data = JSON.parse(text) } catch { data = null }
+    if (!res.ok || !data?.success) {
+      const msg = (data && (data.error || data.message)) || text || 'Failed to send email'
+      throw new Error(msg)
     }
     success.value = true
   } catch (e) {
