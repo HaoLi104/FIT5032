@@ -96,6 +96,11 @@
             class="btn btn-outline-secondary me-2 rounded-pill px-4"
             >My Profile</router-link
           >
+          <router-link
+            to="/account/settings/accessibility"
+            class="btn btn-outline-secondary me-2 rounded-pill px-4"
+            >Accessibility</router-link
+          >
           <button class="btn btn-danger rounded-pill px-4" @click="logout">Logout</button>
         </template>
       </div>

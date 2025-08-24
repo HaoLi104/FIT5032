@@ -71,9 +71,13 @@ async function onSubmit() {
     form.append('subject', subject.value)
     form.append('message', message.value)
     if (fileInput.value?.files?.[0]) form.append('attachment', fileInput.value.files[0])
-    const res = await fetch('/api/bulk-email', { method: 'POST', body: form })
-    const data = await res.json()
-    if (!data?.success) throw new Error(data?.error || 'Bulk email failed')
+    const base = import.meta.env.VITE_VERCEL_API_BASE || ''
+    const endpoint = base ? `${base}/api/bulk-email` : '/api/bulk-email'
+    const res = await fetch(endpoint, { method: 'POST', body: form })
+    const text = await res.text()
+    let data
+    try { data = JSON.parse(text) } catch { data = null }
+    if (!res.ok || !data?.success) throw new Error((data && (data.error || data.message)) || text || 'Bulk email failed')
     sentCount.value = data?.count || list.length
     success.value = true
   } catch (e) {

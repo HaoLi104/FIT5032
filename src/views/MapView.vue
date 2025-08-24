@@ -79,7 +79,10 @@ function parseLatLng(text) {
 async function geocode(text) {
   const coord = parseLatLng(text)
   if (coord) return coord
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}`
+  const base = import.meta.env.VITE_VERCEL_API_BASE || ''
+  const url = base
+    ? `${base}/api/geocode?q=${encodeURIComponent(text)}`
+    : `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}`
   const res = await fetch(url, { headers: { 'Accept-Language': 'en' } })
   const data = await res.json()
   if (!data?.length) return null
@@ -87,7 +90,11 @@ async function geocode(text) {
 }
 
 async function fetchPlaces(q, center) {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=10&viewbox=${center.lng-0.1},${center.lat+0.1},${center.lng+0.1},${center.lat-0.1}&bounded=1`
+  const viewbox = `${center.lng-0.1},${center.lat+0.1},${center.lng+0.1},${center.lat-0.1}`
+  const base = import.meta.env.VITE_VERCEL_API_BASE || ''
+  const url = base
+    ? `${base}/api/geocode?q=${encodeURIComponent(q)}&limit=10&viewbox=${encodeURIComponent(viewbox)}&bounded=1`
+    : `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=10&viewbox=${viewbox}&bounded=1`
   const res = await fetch(url, { headers: { 'Accept-Language': 'en' } })
   const data = await res.json()
   return data
